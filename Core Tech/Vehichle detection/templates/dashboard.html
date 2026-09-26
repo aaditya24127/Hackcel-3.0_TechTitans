@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Detection & Parking Allocation</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Top Status Bar -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="header-title">Vehicle Detection & Parking Allocation</h1>
+                <span class="component-tag">Component Module</span>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span id="systemStatusDot" class="status-dot dot-idle"></span>
+                    <span id="systemStatusText" class="status-text">System Idle</span>
+                </div>
+                <div class="db-indicator">
+                    <span id="dbStatusDot" class="status-dot dot-unknown"></span>
+                    <span id="dbStatusText" class="status-text">Checking DB...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-grid">
+            <!-- Left Column: Video Feed & Counters -->
+            <div class="video-column">
+                <div class="panel video-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <h2>Video Stream</h2>
+                            <span id="fpsBadge" class="badge badge-subtle">0.0 FPS</span>
+                        </div>
+                        <div class="counter-badge" id="vehicleCounterBadge">
+                            <span class="counter-label">VEHICLES DETECTED:</span>
+                            <span class="counter-value" id="liveVehicleCount">0</span>
+                        </div>
+                    </div>
+                    <div class="video-wrapper">
+                        <img id="videoFeed" src="/video_feed" alt="Video Stream" />
+                    </div>
+                </div>
+
+                <!-- Control Panel -->
+                <div class="controls-grid">
+                    <!-- Live Camera Control Box -->
+                    <div class="panel control-box">
+                        <div class="panel-header">
+                            <h3>Camera Input</h3>
+                        </div>
+                        <div class="control-row">
+                            <label for="cameraSelect">Source:</label>
+                            <select id="cameraSelect" class="form-select">
+                                <option value="0">Camera 0 (Default)</option>
+                                <option value="1">Camera 1</option>
+                                <option value="2">Camera 2</option>
+                                <option value="3">Camera 3</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="btnStartCamera" class="btn btn-primary">Start Camera</button>
+                            <button id="btnStopCamera" class="btn btn-danger" disabled>Stop</button>
+                        </div>
+                    </div>
+
+                    <!-- Video / Image Upload & Process Box -->
+                    <div class="panel control-box">
+                        <div class="panel-header">
+                            <h3>Media Input (Video / Image)</h3>
+                        </div>
+                        <div class="upload-section">
+                            <input type="file" id="videoFileInput" accept=".mp4,.avi,.mov,.mkv,.webm,.flv,.jpg,.jpeg,.png,.bmp,.webp" style="display: none;" />
+                            <button id="btnSelectFile" class="btn btn-secondary">Choose File</button>
+                            <span id="selectedFileName" class="file-name-text">No file selected</span>
+                        </div>
+                        <button id="btnProcessVideo" class="btn btn-primary" style="margin-top: 10px;" disabled>Process Media</button>
+                        
+                        <!-- Media Processing Progress Bar -->
+                        <div id="progressContainer" class="progress-container" style="display: none;">
+                            <div class="progress-bar-bg">
+                                <div id="progressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                            <span id="progressText" class="progress-text">Processing: 0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Current Vehicle & Incoming Table -->
+            <div class="info-column">
+                <!-- Current Vehicle Card -->
+                <div class="panel current-vehicle-panel">
+                    <div class="panel-header">
+                        <h2>Current Vehicle</h2>
+                    </div>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle Type:</span>
+                            <span class="detail-value" id="currentVehicleType">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle Number:</span>
+                            <span class="detail-value font-mono highlight" id="currentVehicleNumber">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle Confidence:</span>
+                            <span class="detail-value" id="currentVehicleConf">0.0%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Plate Confidence:</span>
+                            <span class="detail-value" id="currentPlateConf">0.0%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Parking Allocation:</span>
+                            <span id="currentParkingAllocation" class="badge badge-neutral">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Parking Slot:</span>
+                            <span class="detail-value font-mono highlight" id="currentParkingSlot">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Incoming Vehicles Table -->
+                <div class="panel history-panel">
+                    <div class="panel-header">
+                        <h2>Incoming Vehicles</h2>
+                        <span id="recordCount" class="badge badge-subtle">0 records</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Series #</th>
+                                    <th>Vehicle Number</th>
+                                    <th>Allocation</th>
+                                    <th>Slot</th>
+                                    <th>Status</th>
+                                    <th>Detected At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomingTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No detections recorded yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

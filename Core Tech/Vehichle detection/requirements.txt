@@ -1,0 +1,12 @@
+# Parking System Component - Dependencies
+Flask>=2.3.0
+opencv-python>=4.8.0
+ultralytics>=8.0.0
+# OCR Engines (PaddleOCR preferred with EasyOCR fallback)
+paddleocr>=2.7.0
+paddlepaddle>=2.5.0
+easyocr>=1.7.0
+mysql-connector-python>=8.0.33
+numpy>=1.24.0
+python-dotenv>=1.0.0
+Pillow>=9.5.0
